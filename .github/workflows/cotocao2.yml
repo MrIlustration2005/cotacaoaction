@@ -1,0 +1,26 @@
+name: Cotação do Dólar
+
+on: [push]  # Executa o workflow quando houver um push
+
+jobs:
+  mostrar_cotacao:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'  # Usa a versão mais recente do Python 3
+
+      - name: Obter cotação do dólar
+        id: cotacao
+        run: |
+          # Faz uma requisição à API pública para pegar a cotação USD/BRL
+          valor=$(curl -s "https://economia.awesomeapi.com.br/json/last/USD-BRL" | jq -r '.USDBRL.bid')
+          
+          echo "Cotação atual do dólar: R$ $valor"
+          echo "valor=$valor" >> $GITHUB_OUTPUT
+
+      - name: Exibir resultado
+        run: |
+          echo "🟢 A cotação do dólar é: R$ ${{ steps.cotacao.outputs.valor }}"
